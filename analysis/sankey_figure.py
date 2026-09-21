@@ -66,10 +66,28 @@ def draw_sankey(cls, raw, controls, cases, figdir, out):
             value=float(cls.loc[name,s]); height=value*left_scale
             if value > 0:
                 ribbon(.205,.448,cursor,sample_left[s],height,palette[i],f'{name} → {s}: {value:.4f}% bacterial relative abundance')
+                if name == 'Other bacterial classes':
+                    # Qualitative tracing aid over the quantitatively scaled ribbon.
+                    # Its fixed dashed stroke is not an abundance-width encoding.
+                    x0, x1 = .205, .448
+                    dx = (x1-x0)*.48
+                    y0, y1 = cursor+height/2, sample_left[s]+height/2
+                    guide = PathPatch(Path([(x0,y0),(x0+dx,y0),(x1-dx,y1),(x1,y1)],
+                                           [Path.MOVETO,Path.CURVE4,Path.CURVE4,Path.CURVE4]),
+                                      facecolor='none',edgecolor='#454545',lw=1.0,
+                                      linestyle=(0,(4,3)),zorder=6,gid=f'other_guide_{s}')
+                    ax.add_patch(guide)
+                    tips[f'other_guide_{s}'] = f'Other bacterial classes → {s}: {value:.4f}%; dashed guide has no quantitative width meaning'
                 records.append(dict(domain='bacterial',source=name,target=s,value=value,unit='bacterial_percent',signed_delta=np.nan))
                 cursor+=height; sample_left[s]+=height
         bar(.202,yy,heights[name],palette[i])
-        ax.text(.194,yy,name,ha='right',va='center',fontsize=10)
+        label = name
+        if name == 'Other bacterial classes':
+            positive = cls.loc[name][cls.loc[name] > 0]
+            detail = (f'{positive.iloc[0]:.4f}% in {positive.index[0]}'
+                      if len(positive) == 1 else f'{len(positive)} samples')
+            label += '\n' + detail + ' (dashed guide)'
+        ax.text(.194,yy,label,ha='right',va='center',fontsize=10)
     mir_cursor={m:mir_y[m]-weight.loc[m].sum()*right_scale/2 for m in raw.index}
     for s, yy in zip(order,sample_y):
         total=weight[s].sum()*right_scale; cursor=yy-total/2
@@ -94,7 +112,7 @@ def draw_sankey(cls, raw, controls, cases, figdir, out):
     ax.text(.806,1.015,'Candidate miRNAs',ha='center',fontweight='bold',fontsize=12)
     fig.suptitle('Figure 3   Descriptive Sankey of urinary profiles',x=.5,y=.98,fontsize=17,fontweight='bold')
     fig.text(.5,.945,'Two independently scaled link sets joined by sample identity',ha='center',fontsize=12)
-    fig.text(.5,.918,'Other bacterial classes: each remains below 1% in every displayed sample',ha='center',fontsize=10)
+    fig.text(.5,.918,'Other: each class stays below 1% in every sample; dashed guide shows connection only, not abundance',ha='center',fontsize=10)
     # The scale examples use precisely the same axes-coordinate width conversions.
     for x0,x1,scale,label in [(.23,.31,left_scale,'10 percentage points'),(.64,.72,right_scale,'10 log2-count units')]:
         val=10

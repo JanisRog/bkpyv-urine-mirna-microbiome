@@ -16,7 +16,7 @@ The reproduced correlations use raw-miRNA-count ranks and bacterial percentages 
 
 `Figure_3_sankey` retains the original numerical link definitions:
 
-- Left: class relative percentage in each sample. Classes whose maximum abundance is strictly below 1% across all displayed samples are summed as “Other bacterial classes.” A class reaching exactly 1% remains separate. This display-only grouping leaves all numerical analysis tables unchanged. Each sample receives 100 percentage points in total; summed class node heights are not group mean percentages.
+- Left: class relative percentage in each sample. Classes whose maximum abundance is strictly below 1% across all displayed samples are summed as “Other bacterial classes.” A class reaching exactly 1% remains separate. The Other ribbons retain their quantitative width; an overlaid fixed-width dashed guide makes their route visible. This guide is qualitative and does not encode abundance. This display-only grouping leaves all numerical analysis tables unchanged. Each sample receives 100 percentage points in total; summed class node heights are not group mean percentages.
 - Right: absolute difference between a sample's log2(raw miRNA count + 1) and the mean log2 value of the seven controls. Only absolute differences ≥ 0.5 are drawn. Each control is included in its reference mean.
 - Each side uses one linear width conversion shared by all its links, with separate width keys and a visible break. There is no sample-specific rescaling or conservation requirement between sides.
 - Right colors indicate sample-specific direction: red/green for human above/below the control mean and dark/light blue for viral above/below. Neutral miRNA nodes make no significance claim.
