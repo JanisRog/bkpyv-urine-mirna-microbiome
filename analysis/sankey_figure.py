@@ -11,14 +11,29 @@ from matplotlib.patches import PathPatch, Rectangle
 
 def draw_sankey(cls, raw, controls, cases, figdir, out):
     order = sorted(controls, key=lambda s: int(s[1:])) + sorted(cases, key=lambda s: int(s[1:]))
+    # Display-only grouping: preserve every sample's total and full analysis tables.
+    original_cls = cls[order].copy()
+    low = original_cls.max(axis=1) < 1.0
+    mapping = pd.DataFrame({
+        'Class': original_cls.index,
+        'max_sample_pct': original_cls.max(axis=1).to_numpy(),
+        'display_class': ['Other bacterial classes' if flag else name
+                          for name, flag in zip(original_cls.index, low)],
+    })
+    mapping.to_csv(out / 'sankey_class_display_mapping.csv', index=False)
+    cls = original_cls.loc[~low].copy()
+    if low.any():
+        cls.loc['Other bacterial classes'] = original_cls.loc[low].sum(axis=0)
+    assert np.allclose(cls.sum(axis=0), original_cls.sum(axis=0))
     # Same unnormalized log2-count deviations and threshold as the submitted Sankey.
     delta = raw.sub(raw[controls].mean(axis=1), axis=0)[order]
     weight = delta.abs().where(delta.abs() >= .5, 0.)
     delta.to_csv(out / 'sankey_signed_log2_deviations.csv')
     fig, ax = plt.subplots(figsize=(18, 12))
-    fig.subplots_adjust(left=.015, right=.985, top=.90, bottom=.15)
+    fig.subplots_adjust(left=.015, right=.985, top=.875, bottom=.15)
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis('off')
-    palette = plt.get_cmap('tab20')(np.arange(len(cls)))
+    original_palette = dict(zip(original_cls.index, plt.get_cmap('tab20')(np.arange(len(original_cls)))))
+    palette = [original_palette[name] if name in original_palette else '#8a8a8a' for name in cls.index]
     sample_y = np.linspace(.95, .05, len(order))
     # A single width conversion within each domain; never rescale each sample.
     left_scale = .038 / 100
@@ -78,7 +93,8 @@ def draw_sankey(cls, raw, controls, cases, figdir, out):
     ax.text(.5,1.015,'Same samples',ha='center',fontweight='bold',fontsize=12)
     ax.text(.806,1.015,'Candidate miRNAs',ha='center',fontweight='bold',fontsize=12)
     fig.suptitle('Figure 3   Descriptive Sankey of urinary profiles',x=.5,y=.98,fontsize=17,fontweight='bold')
-    fig.text(.5,.94,'Two independently scaled link sets joined by sample identity',ha='center',fontsize=12)
+    fig.text(.5,.945,'Two independently scaled link sets joined by sample identity',ha='center',fontsize=12)
+    fig.text(.5,.918,'Other bacterial classes: each remains below 1% in every displayed sample',ha='center',fontsize=10)
     # The scale examples use precisely the same axes-coordinate width conversions.
     for x0,x1,scale,label in [(.23,.31,left_scale,'10 percentage points'),(.64,.72,right_scale,'10 log2-count units')]:
         val=10

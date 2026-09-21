@@ -16,7 +16,7 @@ The reproduced correlations use raw-miRNA-count ranks and bacterial percentages 
 
 `Figure_3_sankey` retains the original numerical link definitions:
 
-- Left: class relative percentage in each sample. Each sample receives 100 percentage points in total; summed class node heights are not group mean percentages.
+- Left: class relative percentage in each sample. Classes whose maximum abundance is strictly below 1% across all displayed samples are summed as “Other bacterial classes.” A class reaching exactly 1% remains separate. This display-only grouping leaves all numerical analysis tables unchanged. Each sample receives 100 percentage points in total; summed class node heights are not group mean percentages.
 - Right: absolute difference between a sample's log2(raw miRNA count + 1) and the mean log2 value of the seven controls. Only absolute differences ≥ 0.5 are drawn. Each control is included in its reference mean.
 - Each side uses one linear width conversion shared by all its links, with separate width keys and a visible break. There is no sample-specific rescaling or conservation requirement between sides.
 - Right colors indicate sample-specific direction: red/green for human above/below the control mean and dark/light blue for viral above/below. Neutral miRNA nodes make no significance claim.
@@ -38,6 +38,7 @@ All outputs remain local and are ignored by Git.
 | `correlations_original_scale.csv`, `correlations_normalized_sensitivity.csv` | Original and normalization-sensitivity rho, p and adjusted p values. |
 | `correlations_within_*.csv` | Within-group rho; constant pairs remain missing. |
 | `original_paper_candidate_comparison.csv` | Candidate-name/direction comparison with the original abstract; not a reconstruction of its raw analysis. |
+| `sankey_class_display_mapping.csv` | Original classes, maximum sample percentages and display labels, documenting the grouping. |
 | `sankey_links.csv`, `sankey_signed_log2_deviations.csv` | Every plotted link with its units, and signed deviations before display filtering. |
 | `run_summary.json` | Numerical summary, versions, input hashes and reproduction status. |
 
