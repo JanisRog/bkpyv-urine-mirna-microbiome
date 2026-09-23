@@ -16,7 +16,7 @@ No human miRNA survives FDR in any of the four specified inclusion strategies wi
 - `inputs/`: local copies of small source tables and QC files; no FASTQ or BAM files. These inputs are not included in GitHub.
 - `verified_data/`: bacterial tables rebuilt from accession profiles and the accession-to-sample mapping.
 - `analysis/`: reproducible numerical analysis; the manuscript builder additionally depends on the prior revision's formatting and source text and is not part of the standalone analysis command.
-- `cluster/`: count reconstruction and the next DNA inventory job. Set PROJECT and BIOINFO to the corresponding cluster locations before submitting `run_dna_preflight.sbatch`; upload `dna_preflight.py` alongside it.
+- `cluster/`: count reconstruction, the completed DNA inventory job, and a Kraken2 DNA pilot/array job. `run_dna_kraken2.sbatch` uses the existing PlusPF reference and host-filtered FASTQs. Submit only array index 3 first, review its compact report, then submit the full array.
 
 ## Rerun the numerical analysis
 
@@ -46,7 +46,7 @@ python -m unittest discover -s tests -v
 
 ## Work remaining before submission
 
-1. Run the DNA inventory job, then configure broad-domain DNA classification and a residual-host check against documented references. Audit viral, fungal and microbial-eukaryotic read support; confirm BK/JC discrimination with nucleotide alignments/coverage before species-specific claims. Current bacterial-only outputs cannot answer these questions.
+1. Review the DNA Kraken2 pilot, then classify all 22 samples with the validated local PlusPF database. Audit viral, fungal and protozoan read support and residual-host classification; confirm BK/JC discrimination with nucleotide alignments/coverage before species-specific claims. The PlusPF convention does not guarantee exhaustive parasite coverage or identify this local database's exact build date.
 2. Verify original tool/reference releases, DNA trimming history, library metrics and batches where records exist. Current container versions alone will not establish historical versions.
 3. Resolve urine fraction, input volume, the E. coli UTI control's identity, individual viral PCR/pathology data, collection timing and the original six miRNA exclusions with the source investigators. Do not invent these facts; if unavailable, retain explicit limitations. No absolute abundance per mL can be recovered from the current relative tables alone.
 4. Author review of conclusions, figure choices, article-length limits, citations and all response statuses; then an approved public code/archive release and data-access statement. The repository remains private.
