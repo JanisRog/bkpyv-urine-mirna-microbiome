@@ -8,7 +8,7 @@ root=Path(__file__).resolve().parents[1]
 tracked=subprocess.check_output(['git','ls-files','-z'],cwd=root).decode().split('\0')
 # Split literals so this checker does not flag its own source.
 patterns=[r'/'+r'Users/[^/\s]+/',r'/'+r'home/[^/\s]+/',r'gh'+'[opusr]_[A-Za-z0-9]{20,}',r'github'+'_pat_[A-Za-z0-9_]{20,}']
-allowed={'.py','.md','.txt','.ipynb','.yml','.yaml'}
+allowed={'.py','.md','.txt','.ipynb','.yml','.yaml','.R','.sbatch'}
 fail=[]
 for name in filter(None,tracked):
     p=root/name

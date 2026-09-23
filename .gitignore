@@ -42,3 +42,12 @@ __pycache__/
 *.pem
 *.key
 .DS_Store
+
+# Reanalysis inputs, outputs and isolated R dependencies.
+/reanalysis_v2/inputs/
+/reanalysis_v2/results/
+/reanalysis_v2/verified_data/
+/reanalysis_v2/Rlib/
+/reanalysis_v2/rerun_output/
+/reanalysis_v2/figures/
+*.rds
