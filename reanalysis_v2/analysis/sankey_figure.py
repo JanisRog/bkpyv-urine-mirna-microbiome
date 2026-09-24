@@ -9,7 +9,7 @@ from matplotlib.path import Path
 from matplotlib.patches import PathPatch, Rectangle
 
 
-def draw_sankey(cls, raw, controls, cases, figdir, out):
+def draw_sankey(cls, raw, controls, cases, figdir, out, figure_number=3):
     order = sorted(controls, key=lambda s: int(s[1:])) + sorted(cases, key=lambda s: int(s[1:]))
     # Display-only grouping: preserve every sample's total and full analysis tables.
     original_cls = cls[order].copy()
@@ -110,7 +110,7 @@ def draw_sankey(cls, raw, controls, cases, figdir, out):
     ax.text(.202,1.015,'Bacterial classes',ha='center',fontweight='bold',fontsize=12)
     ax.text(.5,1.015,'Same samples',ha='center',fontweight='bold',fontsize=12)
     ax.text(.806,1.015,'Historical miRNA candidates',ha='center',fontweight='bold',fontsize=12)
-    fig.suptitle('Figure 3   Descriptive Sankey of urinary profiles',x=.5,y=.98,fontsize=17,fontweight='bold')
+    fig.suptitle(f'Figure {figure_number}   Descriptive Sankey of urinary profiles',x=.5,y=.98,fontsize=17,fontweight='bold')
     fig.text(.5,.945,'Two independently scaled link sets joined by sample identity',ha='center',fontsize=12)
     fig.text(.5,.918,'Other: each class stays below 1% in every sample; dashed guide shows connection only, not abundance',ha='center',fontsize=10)
     # The scale examples use precisely the same axes-coordinate width conversions.
@@ -122,7 +122,7 @@ def draw_sankey(cls, raw, controls, cases, figdir, out):
     fig.text(.72,.062,'Right: width = |sample log2(normalized count + 1) − control mean|; |Δ| ≥ 0.5',fontsize=10,ha='center')
     fig.text(.5,.036,'Right-link colors: human above / below control mean = red / green; viral above / below = dark / light blue.',ha='center',fontsize=10)
     fig.text(.5,.015,'Widths are comparable only within each side. Links show shared sample membership, not interactions. *Shared BKPyV/JCPyV 3p sequence.',ha='center',fontsize=10)
-    stem=figdir/'Figure_3_sankey'
+    stem=figdir/f'Figure_{figure_number}_sankey'
     fig.savefig(stem.with_suffix('.png'),dpi=220)
     fig.savefig(stem.with_suffix('.svg'))
     plt.close(fig)
