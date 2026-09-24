@@ -60,7 +60,7 @@ fi
   printf 'bwa_version\n'
   "${BWA[@]}" 2>&1 | head -3 || true
   printf 'samtools_version\n'
-  "${SAM[@]}" --version | head -2
+  "${SAM[@]}" --version
   printf 'input_files\n'
   stat -c '%n %s bytes %y' "$R1" "$R2"
 } > "$OUT/run_metadata.txt"
