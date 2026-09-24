@@ -16,7 +16,8 @@ No human miRNA survives FDR in any of the four specified inclusion strategies wi
 - `inputs/`: local copies of small source tables and QC files; no FASTQ or BAM files. These inputs are not included in GitHub.
 - `verified_data/`: bacterial tables rebuilt from accession profiles and the accession-to-sample mapping.
 - `analysis/`: reproducible numerical analysis; the manuscript builder additionally depends on the prior revision's formatting and source text and is not part of the standalone analysis command.
-- `cluster/`: count reconstruction, the completed DNA inventory job, and a Kraken2 DNA pilot/array job. `run_dna_kraken2.sbatch` uses the existing PlusPF reference and host-filtered FASTQs. The first pilot completed but memory mapping took 16.4 hours for 1.39 million pairs. The revised script requests 128 GB to hold the database in RAM; rerun array index 3 and review its compact report before submitting all 22 samples.
+- `cluster/`: count reconstruction, the completed DNA inventory job, and a Kraken2 DNA pilot/array job. `run_dna_kraken2.sbatch` uses the existing PlusPF reference and host-filtered FASTQs. The memory-mapped pilot took 16.4 hours for 1.39 million pairs; the 128-GB RAM pilot completed in about 2.4 minutes with an identical report. The full 22-sample array is ready for submission.
+- `analysis/summarize_kraken2.py`: validates the compact archives from all 22 array tasks against their run metadata and known sample mapping, then creates per-sample domain counts and the complete nonzero taxon table. It does not treat classifier assignments as verified infections or absolute abundance.
 
 ## Rerun the numerical analysis
 
