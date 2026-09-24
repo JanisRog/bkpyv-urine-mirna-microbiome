@@ -64,9 +64,11 @@ def main():
         ax.axvline(threshold, color="#999999", lw=.8, ls="--")
     ax.set(xlabel="Case versus control log2 fold change",
            ylabel="−log10(unadjusted p)",
-           title="A  All 230 miRNAs with finite tests")
-    ax.text(.03, .97, "15 with p < 0.05 and ≥2-fold change\n0 with q < 0.05",
-            transform=ax.transAxes, va="top", ha="left",
+           title="A  Human miRNAs: 230 finite tests")
+    ax.text(.98, .97,
+            f"{len(nominal)} with p < 0.05 and ≥2-fold change\n"
+            f"{int((finite.padj < .05).sum())} with q < 0.05",
+            transform=ax.transAxes, va="top", ha="right",
             bbox={"facecolor": "white", "edgecolor": "#dddddd", "pad": 6})
     ax.scatter([], [], c=up, s=32, label="Higher in cases; display threshold met")
     ax.scatter([], [], c=down, s=32, label="Lower in cases; display threshold met")
@@ -92,7 +94,7 @@ def main():
     for i, row in enumerate(nominal.itertuples()):
         bx.text(hi + .22, i, f"q={row.padj:.3f}", va="center", fontsize=8,
                 color="#555555")
-    fig.suptitle("Human miRNAs in corrected-count analysis",
+    fig.suptitle("Human miRNAs in corrected-count analysis (viral miRNAs in Figure 2)",
                  fontsize=12, fontweight="bold")
     fig.savefig(a.out / "Figure_1_human_miRNA.png", dpi=220)
     fig.savefig(a.out / "Figure_1_human_miRNA.svg")
