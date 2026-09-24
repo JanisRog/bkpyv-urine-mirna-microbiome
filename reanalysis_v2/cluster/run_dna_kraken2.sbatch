@@ -5,7 +5,7 @@
 #SBATCH --job-name=bk_dna_kraken2
 #SBATCH --array=1-22%2
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 #SBATCH --time=24:00:00
 #SBATCH --output=dna_kraken2_%A_%a.out
 #SBATCH --error=dna_kraken2_%A_%a.err
@@ -13,6 +13,7 @@ set -euo pipefail
 
 PROJECT=/shares/amr.imm.uzh/data/projects/jaroge/urine_microbiome_bk
 DB=${KRAKEN_DB:-/shares/amr.imm.uzh/bioinfo/databases/kraken2_PlusPF}
+KRAKEN_MEMORY_MAPPING=${KRAKEN_MEMORY_MAPPING:-0}
 SIF=/shares/amr.imm.uzh/bioinfo/singularity/kraken2_2.1.2--pl5321h9f5acd7_3.sif
 ROOT="$PROJECT/results/revision/DNA_kraken2_${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID:-manual}}"
 TASK_ID=${SLURM_ARRAY_TASK_ID:?Submit as a Slurm array job}
@@ -50,6 +51,12 @@ else
   exit 1
 fi
 
+case "$KRAKEN_MEMORY_MAPPING" in
+  0) MEMORY_OPTION=() ;;
+  1) MEMORY_OPTION=(--memory-mapping) ;;
+  *) echo "KRAKEN_MEMORY_MAPPING must be 0 or 1" >&2; exit 1 ;;
+esac
+
 {
   printf 'sample\t%s\n' "$SAMPLE"
   printf 'array_job_id\t%s\n' "${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID:-manual}}"
@@ -58,7 +65,9 @@ fi
   printf 'start_utc\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   printf 'database\t%s\n' "$DB"
   printf 'container\t%s\n' "$SIF"
-  printf 'method\tpaired Kraken2; default confidence; memory mapping; minimizer-data report\n'
+  printf 'method\tpaired Kraken2; default confidence; minimizer-data report\n'
+  printf 'memory_mapping\t%s\n' "$KRAKEN_MEMORY_MAPPING"
+  printf 'slurm_memory\t%s\n' "${SLURM_MEM_PER_NODE:-unavailable}"
   printf 'database_files\n'
   stat -c '%n\t%s bytes\t%y' "$DB"/{hash,opts,taxo}.k2d
   printf 'input_files\n'
@@ -72,7 +81,7 @@ echo "Classifying $SAMPLE against $DB; results: $OUT"
   --db "$DB" \
   --paired \
   --threads "${SLURM_CPUS_PER_TASK:-8}" \
-  --memory-mapping \
+  "${MEMORY_OPTION[@]}" \
   --report-minimizer-data \
   --report "$OUT/report.tsv" \
   --output "$OUT/assignments.kraken" \
