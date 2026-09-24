@@ -6,7 +6,7 @@ This is the current analysis code as of 24 September 2026. It supersedes the ear
 
 The revised human counts remove repeated assignments across precursors and exclude ambiguity across distinct mature names. Main analysis: at least 2,000 assigned human counts, 9 cases/7 controls. Sensitivities: all 22, at least 1,000 counts, previous combined criterion, and individual influence exclusions. DESeq2 and edgeR test integer counts. Bacterial profiles were rebuilt from 22 accession-level MetaPhlAn outputs with verified archive mapping, yielding 119 species labels. The all-22 bacterial analysis is primary for that component. See `ANALYSIS_PLAN.md` for retrospective decisions and limitations.
 
-No human miRNA survives FDR in any of the four specified inclusion strategies with either count model. The S24-excluded influence analysis does yield discoveries and must not be mistaken for a justified exclusion. Bacterial and group-conditioned integrated tests do not survive their stated FDR corrections. Viral results depend on normalization. Absence of corrected findings does not establish equivalence.
+The final Figure 1 applies the original miRNA paper's volcano-plot display rule—unadjusted P < .05 and at least twofold change—to revised DESeq2 estimates. Fifteen human miRNAs meet that exploratory rule in the main 9/7 subset (11 higher and four lower in cases), including two increases also reported in the earlier 8/8 CLC analysis, miR-16-5p and miR-200c-3p. No human miRNA survives FDR in any of the four specified inclusion strategies with either count model. The S24-excluded influence analysis does yield discoveries and must not be mistaken for a justified exclusion. Bacterial and group-conditioned integrated tests do not survive their stated FDR corrections. Viral results depend on normalization. Absence of corrected findings does not establish equivalence.
 
 The 22-sample Kraken2 screen and competitive BKPyV/JCPyV DNA alignment are complete. All 22 urine DNA libraries, including blood-DNAemia-negative controls, had deep BKPyV genome coverage. S14 was the only sample with deep JCPyV genome coverage. Other low-level JCPyV signals cannot be called definitively absent. The shared BK/JCPyV 3p miRNA remains non-specific to either virus. Sequence reads do not establish urine copies/mL or productive infection.
 
@@ -23,7 +23,8 @@ The 22-sample Kraken2 screen and competitive BKPyV/JCPyV DNA alignment are compl
 - `analysis/summarize_polyoma_reports.py`: validates all 22 per-sample BKPyV/JCPyV alignment archives, recomputes coverage breadth from their depth files, and joins the results with the Kraken2 screen.
 - `analysis/final_dna_integration.py`: exports sample-level viral DNA, viral-miRNA and QC values and makes the polyomavirus and bacterial individual-level figures. This integration is exploratory and follows the prespecified table analysis.
 - `analysis/compile_eukaryote_screen.py`: exports fungal and other non-metazoan eukaryotic species labels as a descriptive screen, without infection calls.
-- `analysis/build_final_figure_pack.py`: assembles Figures 1–4 and retains the descriptive Sankey as Figure 4, with its interactive HTML version.
+- `analysis/make_final_human_figure.py`: applies the source paper's P and fold-change display rule to the corrected main DESeq2 results, exports the 15-candidate numerical table and makes Figure 1. The resulting nominal candidate list is not a validation or exact CLC replication.
+- `analysis/build_final_figure_pack.py`: assembles Figures 1–4 using that revised Figure 1, retains the previous historical-candidate plot as a supplement, and keeps the descriptive Sankey as Figure 4 with its interactive HTML version.
 
 ## Rerun the numerical analysis
 
@@ -44,7 +45,17 @@ python analysis/run_revision.py \
 
 The output folder must not already exist. If packages are installed in a standard R library, supply an existing empty directory to `--rlib`; standard R libraries remain on the search path. Use `--rscript` if Rscript is not on PATH. On this Mac, the existing package-local Rlib can be used directly. The notebook `analysis/reanalysis_v2.ipynb` provides the same run with explicit path prompts.
 
-`run_revision.py` rebuilds bacterial tables, fits the six count-model configurations, runs permutation tests, creates figures and independently checks saved results. The completed 24 September rerun reproduced the earlier key tables byte for byte. It does not redo raw-read alignment or generate manuscript text. The direct validator is:
+`run_revision.py` rebuilds bacterial tables, fits the six count-model configurations, runs permutation tests, creates figures and independently checks saved results. The completed 24 September rerun reproduced the earlier key tables byte for byte. It does not redo raw-read alignment or generate manuscript text.
+
+To generate the publication-facing human figure from a completed run, use a fresh output directory:
+
+```bash
+python analysis/make_final_human_figure.py \
+  --models rerun_output/results/count_models \
+  --out human_figure_original_style
+```
+
+The other three figures and Sankey are assembled separately with `build_final_figure_pack.py`; see its required paths with `--help`. To check a completed numerical run:
 
 ```bash
 python analysis/validate_results.py --root . --recount inputs/recount

@@ -8,7 +8,7 @@ The previous scripts under `analysis/` reproduce the historical quantile-normali
 
 ## Scope and limitations
 
-The current work is an author-review revision, not a completed or validated clinical pipeline. Further DNA viral/fungal/microbial-eukaryotic classification, residual-host assessment and clinical/laboratory provenance checks remain outstanding. Sample thresholds are retrospective and unvalidated. No subset is selected for producing significance; influence analyses are reported separately. Relative profiles and normalized miRNA counts are not absolute microbial or viral loads.
+The current work is an author-review revision, not a validated clinical pipeline. The 22-sample DNA viral and broad-domain screen is complete; source clinical/laboratory provenance checks remain outstanding. The human-miRNA figure uses the source paper's descriptive display rule of unadjusted P < .05 and at least twofold change on corrected DESeq2 counts. This is not a rerun of the source CLC model; q values across all finite tests remain available. Sample thresholds are retrospective and unvalidated. No subset is selected for producing significance; influence analyses are reported separately. Relative profiles and normalized miRNA counts are not absolute microbial or viral loads.
 
 This private repository contains code and documentation only. No study input tables, clinical records, sequencing reads, manuscript drafts or generated sample-level results are tracked. Reproduction requires approved inputs from the authors. The local package additionally contains small input tables, numerical results and drafts; it is not the GitHub distribution.
 

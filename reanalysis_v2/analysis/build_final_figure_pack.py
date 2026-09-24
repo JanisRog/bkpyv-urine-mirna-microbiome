@@ -13,19 +13,23 @@ from sankey_figure import draw_sankey
 
 
 p = argparse.ArgumentParser(description=__doc__)
-for key in ["root", "table-run", "dna-integration", "out"]:
+for key in ["root", "table-run", "dna-integration", "human-figure", "out"]:
     p.add_argument("--" + key, type=Path, required=True)
 a = p.parse_args()
 if a.out.exists():
     p.error(f"Output exists: {a.out}")
 a.out.mkdir(parents=True)
 for src, stem in [
-    (a.table_run, "Figure_1_human_miRNA"),
+    (a.human_figure, "Figure_1_human_miRNA"),
     (a.dna_integration, "Figure_2_polyomavirus"),
     (a.dna_integration, "Figure_3_bacterial_individuals"),
 ]:
     for suffix in ["png", "svg"]:
-        shutil.copy2(src / "figures" / f"{stem}.{suffix}", a.out / f"{stem}.{suffix}")
+        source_dir = src if stem == "Figure_1_human_miRNA" else src / "figures"
+        shutil.copy2(source_dir / f"{stem}.{suffix}", a.out / f"{stem}.{suffix}")
+for suffix in ["png", "svg"]:
+    shutil.copy2(a.table_run / "figures" / f"Figure_1_human_miRNA.{suffix}",
+                 a.out / f"Supplement_historical_human_miRNAs.{suffix}")
 
 meta = pd.read_csv(a.root / "verified_data/metadata/bkv_sample_metadata.csv").set_index("sample")
 sf = pd.read_csv(a.table_run / "results/count_models/main_ge2000/size_factors.csv").set_index("sample").size_factor

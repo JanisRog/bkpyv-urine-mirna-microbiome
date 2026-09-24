@@ -9,10 +9,12 @@ tracked=subprocess.check_output(['git','ls-files','-z'],cwd=root).decode().split
 # Split literals so this checker does not flag its own source.
 patterns=[r'/'+r'Users/[^/\s]+/',r'/'+r'home/[^/\s]+/',r'gh'+'[opusr]_[A-Za-z0-9]{20,}',r'github'+'_pat_[A-Za-z0-9_]{20,}']
 allowed={'.py','.md','.txt','.ipynb','.yml','.yaml','.R','.sbatch'}
+public_references={'reanalysis_v2/cluster/references/BK_JC_RefSeq.fasta'}
 fail=[]
 for name in filter(None,tracked):
     p=root/name
-    if p.suffix not in allowed and p.name!='.gitignore':fail.append(f'Unexpected tracked file type: {name}')
+    if p.suffix not in allowed and p.name!='.gitignore' and name not in public_references:
+        fail.append(f'Unexpected tracked file type: {name}')
     text=subprocess.check_output(['git','show',':'+name],cwd=root).decode()
     if any(re.search(pattern,text) for pattern in patterns):fail.append(f'Private path or credential pattern: {name}')
     if p.suffix=='.ipynb':

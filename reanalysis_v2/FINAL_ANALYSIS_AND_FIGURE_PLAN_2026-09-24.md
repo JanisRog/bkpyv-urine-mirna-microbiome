@@ -29,3 +29,7 @@ This is a prospective work plan for the **remaining revision**, written after th
 ## Manuscript and response pass
 
 Regenerate every number and plot from the frozen inputs, then update the Results, expanded Discussion, figure legends and point-by-point response together. Specifically explain the distinction between blood DNAemia and urinary shedding, the shared 3p miRNA, discordance between original and revised analyses, low-biomass contamination limits, and why absolute reads or copies per mL cannot be reconstructed. Audit each claim against its table and figure. Render and visually check the final DOCX files. Keep the repository private until the author approves a release.
+
+## Display decision after inspecting the revised results
+
+The author subsequently chose to present the corrected DESeq2 human results using the original paper's descriptive volcano-plot thresholds: unadjusted P < .05 and at least twofold change. Figure 1 and Table 2 therefore show all 15 revised candidates meeting both thresholds (11 higher, four lower). This choice was made after inspecting the new results and is not a prespecified discovery rule or a rerun of the original CLC model. Adjusted q values across all 230 finite tests remain reported; none is below .05. The historical-candidate effect plot is retained as a supplement, while the Sankey and fixed historical cross-domain candidate set remain descriptive and unchanged.
