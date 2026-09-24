@@ -18,6 +18,7 @@ No human miRNA survives FDR in any of the four specified inclusion strategies wi
 - `analysis/`: reproducible numerical analysis; the manuscript builder additionally depends on the prior revision's formatting and source text and is not part of the standalone analysis command.
 - `cluster/`: count reconstruction, the completed DNA inventory and 22-sample Kraken2 screen, plus a competitive BKPyV/JCPyV alignment job. `run_dna_kraken2.sbatch` uses the existing PlusPF reference and host-filtered FASTQs. The memory-mapped pilot took 16.4 hours for 1.39 million pairs; the 128-GB RAM pilot completed in about 2.4 minutes with an identical report. `run_polyoma_alignment.sbatch` uses the two fixed NCBI RefSeq genomes in `cluster/references/` and reports high-confidence alignment counts and breadth; pilot array indices 15 and 20 before running all samples.
 - `analysis/summarize_kraken2.py`: validates the compact archives from all 22 array tasks against their run metadata and known sample mapping, then creates per-sample domain counts and the complete nonzero taxon table. It does not treat classifier assignments as verified infections or absolute abundance.
+- `analysis/summarize_polyoma_reports.py`: validates per-sample BKPyV/JCPyV alignment archives, recomputes coverage breadth from their depth files, and joins the results with the Kraken2 screen. The S14/S24 pilot confirmed genome-wide evidence for both viruses in S14 but only BKPyV in S24 at high depth; run all 22 before study-wide claims.
 
 ## Rerun the numerical analysis
 

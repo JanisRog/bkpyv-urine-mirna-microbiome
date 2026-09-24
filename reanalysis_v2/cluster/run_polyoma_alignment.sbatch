@@ -58,7 +58,7 @@ fi
   printf 'start_utc\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   printf 'reference_sha256\t%s\n' "$(sha256sum "$REF" | cut -d' ' -f1)"
   printf 'bwa_version\n'
-  "${BWA[@]}" 2>&1 | head -3 || true
+  "${BWA[@]}" 2>&1 || true
   printf 'samtools_version\n'
   "${SAM[@]}" --version
   printf 'input_files\n'
@@ -91,5 +91,6 @@ python3 "$SCRIPT_DIR/summarize_polyoma_alignment.py" \
 printf 'finish_utc\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$OUT/run_metadata.txt"
 printf 'Complete: %s\n' "$SAMPLE" > "$OUT/SUCCESS"
 tar -czf "$ROOT/small_reports/${SAMPLE}_polyoma_summary.tar.gz" \
-  -C "$OUT" summary.tsv run_metadata.txt idxstats.tsv mapq30_first_mates.tsv depth_mapq30_baseq20.tsv SUCCESS
+  -C "$OUT" summary.tsv run_metadata.txt idxstats.tsv mapq30_first_mates.tsv \
+  depth_mapq30_baseq20.tsv bwa_index_stderr.txt bwa_mem_stderr.txt SUCCESS
 echo "Done: $ROOT/small_reports/${SAMPLE}_polyoma_summary.tar.gz"
