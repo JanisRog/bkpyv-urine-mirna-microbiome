@@ -2,11 +2,11 @@
 
 # BKPyV reanalysis for author review
 
-This is the current analysis code as of 24 September 2026. It supersedes the earlier quantile-normalized analysis and the older merged bacterial table for the revised results. Previous outputs remain preserved outside this package. Author review and source-metadata resolution remain necessary before journal submission.
+This is the current analysis code as of 2 October 2026. It supersedes the earlier quantile-normalized analysis and the older merged bacterial table for the revised results. Previous outputs remain preserved outside this package. Author review and source-metadata resolution remain necessary before journal submission.
 
 The revised human counts remove repeated assignments across precursors and exclude ambiguity across distinct mature names. Main analysis: at least 2,000 assigned human counts, 9 cases/7 controls. Sensitivities: all 22, at least 1,000 counts, previous combined criterion, and individual influence exclusions. DESeq2 and edgeR test integer counts. Bacterial profiles were rebuilt from 22 accession-level MetaPhlAn outputs with verified archive mapping, yielding 119 species labels. The all-22 bacterial analysis is primary for that component. See `ANALYSIS_PLAN.md` for retrospective decisions and limitations.
 
-The final Figure 1 applies the original miRNA paper's volcano-plot display rule—unadjusted P < .05 and at least twofold change—to revised DESeq2 estimates. Fifteen human miRNAs meet that exploratory rule in the main 9/7 subset (11 higher and four lower in cases), including two increases also reported in the earlier 8/8 CLC analysis, miR-16-5p and miR-200c-3p. No human miRNA survives FDR in any of the four specified inclusion strategies with either count model. The S24-excluded influence analysis does yield discoveries and must not be mistaken for a justified exclusion. Bacterial and group-conditioned integrated tests do not survive their stated FDR corrections. Viral results depend on normalization. Absence of corrected findings does not establish equivalence.
+The final Figure 1 places human and viral miRNAs in one DESeq2 negative-binomial model, with size factors estimated from the human counts before adding the two viral rows. Fifteen human miRNAs meet the original paper's exploratory display rule in the main 9/7 subset (11 higher and four lower in cases); none has q < .05. The shared BKPyV/JCPyV 3p sequence has q=0.057, while BKPyV 5p has no primary p-value because S7 triggers Cook's-distance filtering. In the 11/11 sensitivity, BKPyV 5p has DESeq2 q=0.012 but robust edgeR q=0.374, so the result is method- and subset-sensitive. The S24-excluded human influence analysis yields a discovery but does not justify excluding S24. Bacterial and group-conditioned integrated tests remain unsupported after FDR correction.
 
 The 22-sample Kraken2 screen and competitive BKPyV/JCPyV DNA alignment are complete. All 22 urine DNA libraries, including blood-DNAemia-negative controls, had deep BKPyV genome coverage. S14 was the only sample with deep JCPyV genome coverage. Other low-level JCPyV signals cannot be called definitively absent. The shared BK/JCPyV 3p miRNA remains non-specific to either virus. Sequence reads do not establish urine copies/mL or productive infection.
 
@@ -23,7 +23,9 @@ The 22-sample Kraken2 screen and competitive BKPyV/JCPyV DNA alignment are compl
 - `analysis/summarize_polyoma_reports.py`: validates all 22 per-sample BKPyV/JCPyV alignment archives, recomputes coverage breadth from their depth files, and joins the results with the Kraken2 screen.
 - `analysis/final_dna_integration.py`: exports sample-level viral DNA, viral-miRNA and QC values and makes the polyomavirus and bacterial individual-level figures. This integration is exploratory and follows the prespecified table analysis.
 - `analysis/compile_eukaryote_screen.py`: exports fungal and other non-metazoan eukaryotic species labels as a descriptive screen, without infection calls.
-- `analysis/make_final_human_figure.py`: applies the source paper's P and fold-change display rule to the corrected main DESeq2 results, exports the 15-candidate numerical table and makes Figure 1. The resulting nominal candidate list is not a validation or exact CLC replication.
+- `analysis/run_joint_mirna_models.R`: fits 244 human features and two prespecified viral sequences together across six subsets, with fixed human-derived normalization in DESeq2 and robust edgeR. It saves Cook's-distance and S7 influence diagnostics. The BK/JC shared 3p sequence remains species-ambiguous.
+- `analysis/make_joint_mirna_figure.py`: makes the current Figure 1 from the primary joint DESeq2 fit. BKPyV 5p is shown in a separate untested band rather than being assigned an invented volcano p-value.
+- `analysis/make_final_human_figure.py`: preserves the previous human-only Figure 1 generation for audit; it is superseded by the joint figure above.
 - `analysis/build_final_figure_pack.py`: assembles Figures 1–4 using that revised Figure 1, retains the previous historical-candidate plot as a supplement, and keeps the descriptive Sankey as Figure 4 with its interactive HTML version.
 
 ## Rerun the numerical analysis
@@ -55,7 +57,16 @@ python analysis/make_final_human_figure.py \
   --out human_figure_original_style
 ```
 
-The other three figures and Sankey are assembled separately with `build_final_figure_pack.py`; see its required paths with `--help`. To check a completed numerical run:
+After `run_revision.py` has generated host-only normalization factors, run the joint models and current Figure 1 from the package directory:
+
+```bash
+Rscript analysis/run_joint_mirna_models.R . joint_mirna_models Rlib
+python analysis/make_joint_mirna_figure.py \
+  --models joint_mirna_models \
+  --out joint_figure_1
+```
+
+The output directories must not already exist. The joint model reads the local `inputs/recount` count matrices and the host-only normalization outputs from `results/count_models`. If the earlier run was written to `rerun_output/results/count_models`, copy those model outputs into the expected local location or run from a matching package tree. The remaining figures and Sankey are assembled separately; the older `build_final_figure_pack.py` still expects the human-only figure name, so copy the new Figure 1 into a versioned final figure directory rather than rerunning that assembler unchanged. To check the pre-existing numerical run:
 
 ```bash
 python analysis/validate_results.py --root . --recount inputs/recount
