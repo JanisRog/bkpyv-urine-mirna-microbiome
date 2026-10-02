@@ -55,6 +55,9 @@ def main():
         ('group_conditioned_correlations.csv', ['strategy'], 'FDR_all_pairs'),
         ('viral_sensitivity.csv', ['strategy', 'scale'], 'FDR_two_viral')]:
         frame = pd.read_csv(tabs / filename)
+        if filename == 'group_conditioned_correlations.csv':
+            finite_r = frame.group_adjusted_rank_r.dropna()
+            assert np.isfinite(finite_r).all() and (finite_r.abs() <= 1 + 1e-12).all()
         for _, group in frame.groupby(keys):
             check_bh(group, 'pvalue', q)
         finite = frame.pvalue.dropna()

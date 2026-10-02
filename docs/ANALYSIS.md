@@ -1,5 +1,7 @@
 # Analysis scope and outputs
 
+This page documents the historical quantile-normalized workflow in `analysis/`. Its model and figure numbering do not describe the revised brief communication. For the current count-model and two-main-figure analysis, use [`reanalysis_v2/README.md`](../reanalysis_v2/README.md).
+
 ## Reproduced analysis
 
 Samples require at least 2,000 total human-miRNA counts and at least 30 human features with 10 or more counts. Human features require at least 10 counts in at least three retained samples. Viral counts do not enter sample QC.

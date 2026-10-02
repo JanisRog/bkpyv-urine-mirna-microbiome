@@ -1,5 +1,7 @@
 # Required input tables
 
+These are the inputs for the historical workflow in `analysis/reanalyze.py`. The current revision has a separate input layout in [`reanalysis_v2/README.md`](../reanalysis_v2/README.md).
+
 Supply an approved local data directory with the eight relative paths below. CSV files use a header row and comma delimiters; UTF-8 with or without BOM is accepted by the pandas loader. Input files are never modified.
 
 | Relative path | Required structure |

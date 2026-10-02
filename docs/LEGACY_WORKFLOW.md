@@ -1,6 +1,6 @@
 # BKPyV urinary miRNA and microbiome analysis
 
-Reproducible, exploratory secondary analysis of urinary human/viral miRNA counts and bacterial taxonomic profiles in kidney transplant recipients. This repository accompanies the manuscript revision and is being prepared privately for author review.
+This page preserves the earlier quantile-normalized workflow for audit. It does not generate the results or figure numbering in the revised brief communication; see [`reanalysis_v2/README.md`](../reanalysis_v2/README.md) for the current workflow.
 
 The workflow reproduces the submitted table-based analysis, reports normalization sensitivities, summarizes bacteria from class to species, and produces the descriptive Sankey and supplementary correlation heatmaps. It does not process raw sequencing reads or establish validated biomarkers, biological interactions or absolute microbial loads.
 
@@ -18,7 +18,7 @@ On Windows, activate with `.venv\Scripts\activate` instead. Analysis dependencie
 
 ## Run from the command line
 
-Point `--data-dir` at the existing input folder described in [docs/INPUTS.md](docs/INPUTS.md):
+Point `--data-dir` at the existing input folder described in [the historical input list](INPUTS.md):
 
 ```bash
 python analysis/reanalyze.py --data-dir /path/to/approved/input_data --out-dir outputs
@@ -44,7 +44,7 @@ Alternatively, launch `python -m jupyterlab analysis/revision_analysis.ipynb` fr
 - The revision reproduced 268 original miRNA tests and 168 correlations; none passed their stated global FDR correction. Class-to-species tests are exploratory percentage comparisons with within-rank and across-rank FDR.
 - The Sankey connects measurements through sample identity. Its left and right link sets have independent units and scales. A display cutoff is not a significance threshold, and links do not establish interactions.
 
-See [docs/ANALYSIS.md](docs/ANALYSIS.md) for the statistical scope and output definitions.
+See [the historical analysis notes](ANALYSIS.md) for the statistical scope and output definitions.
 
 ## Data access and repository contents
 
@@ -61,4 +61,4 @@ python tests/check_repository.py
 
 CI runs these checks on synthetic numerical examples without accessing study data. It does not independently validate the clinical results. Local full-data reproduction remains a separate check.
 
-No reuse license or archived release DOI has been assigned yet. See [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before making the repository public or citing a frozen release. Code assistance and author responsibility should be disclosed consistently with the manuscript.
+No reuse license or archived release DOI has been assigned yet. See [the release checklist](RELEASE_CHECKLIST.md) before citing a frozen release. Code assistance and author responsibility should be disclosed consistently with the manuscript.

@@ -6,7 +6,7 @@ This is the current analysis code as of 2 October 2026. It supersedes the earlie
 
 The revised human counts remove repeated assignments across precursors and exclude ambiguity across distinct mature names. Main analysis: at least 2,000 assigned human counts, 9 cases/7 controls. Sensitivities: all 22, at least 1,000 counts, previous combined criterion, and individual influence exclusions. DESeq2 and edgeR test integer counts. Bacterial profiles were rebuilt from 22 accession-level MetaPhlAn outputs with verified archive mapping, yielding 119 species labels. The all-22 bacterial analysis is primary for that component. See `ANALYSIS_PLAN.md` for retrospective decisions and limitations.
 
-The final Figure 1 places human and viral miRNAs in one DESeq2 negative-binomial model, with size factors estimated from the human counts before adding the two viral rows. Fifteen human miRNAs meet the original paper's exploratory display rule in the main 9/7 subset (11 higher and four lower in cases); none has q < .05. The shared BKPyV/JCPyV 3p sequence has q=0.057, while BKPyV 5p has no primary p-value because S7 triggers Cook's-distance filtering. In the 11/11 sensitivity, BKPyV 5p has DESeq2 q=0.012 but robust edgeR q=0.374, so the result is method- and subset-sensitive. The S24-excluded human influence analysis yields a discovery but does not justify excluding S24. Figure 2 shows one host-normalized, group-adjusted correlation heatmap: the 15 descriptive human candidates plus two prespecified viral sequences against 13 recurrent bacterial genera. None of its 221 pairs survives FDR correction (minimum q=0.876). Figure 3 retains the descriptive Sankey. Bacterial and integrated results remain exploratory.
+The final Figure 1 places human and viral miRNAs in one DESeq2 negative-binomial model, with size factors estimated from the human counts before adding the two viral rows. Fifteen human miRNAs meet the original paper's exploratory display rule in the main 9/7 subset (11 higher and four lower in cases); none has q < .05. The shared BKPyV/JCPyV 3p sequence has q=0.057, while BKPyV 5p has no primary p-value because S7 triggers Cook's-distance filtering. In the 11/11 sensitivity, BKPyV 5p has DESeq2 q=0.012 but robust edgeR q=0.374, so the result is method- and subset-sensitive. The S24-excluded human influence analysis yields a discovery but does not justify excluding S24. Figure 2 shows one host-normalized, group-adjusted correlation heatmap: the 15 descriptive human candidates plus two prespecified viral sequences against 13 recurrent bacterial genera. None of its 221 pairs survives FDR correction (minimum q=0.876). The descriptive Sankey is Supplementary Figure S3. Bacterial and integrated results remain exploratory.
 
 The 22-sample Kraken2 screen and competitive BKPyV/JCPyV DNA alignment are complete. All 22 urine DNA libraries, including blood-DNAemia-negative controls, had deep BKPyV genome coverage. S14 was the only sample with deep JCPyV genome coverage. Other low-level JCPyV signals cannot be called definitively absent. The shared BK/JCPyV 3p miRNA remains non-specific to either virus. Sequence reads do not establish urine copies/mL or productive infection.
 
@@ -27,8 +27,8 @@ The 22-sample Kraken2 screen and competitive BKPyV/JCPyV DNA alignment are compl
 - `analysis/make_joint_mirna_figure.py`: makes the current Figure 1 from the primary joint DESeq2 fit. BKPyV 5p is shown in a separate untested band rather than being assigned an invented volcano p-value.
 - `analysis/make_final_human_figure.py`: preserves the previous human-only Figure 1 generation for audit; it is superseded by the joint figure above.
 - `analysis/make_mirna_genus_heatmap.py`: makes the current single-panel Figure 2 from host-normalized miRNA ranks and genus centred-log-ratio ranks. It removes case/control means, uses 19,999 within-group permutations, corrects all 221 pairs together, and exports raw-count, all-22 and pseudocount sensitivities. Candidate selection and correlation use the same cohort, so these are exploratory tests.
-- `analysis/build_three_figure_pack.py`: assembles the current Figures 1–3, moving the prior polyomavirus-DNA/RNA and individual bacterial plots to supplementary figures and retaining the Sankey as Figure 3 with an interactive HTML version.
-- `analysis/build_final_figure_pack.py`: preserves the earlier four-figure layout for audit; it is superseded by `build_three_figure_pack.py`.
+- `analysis/build_tid_brief_figures.py`: assembles the journal's two main figures, polyomavirus and bacterial supplementary figures, the Sankey as Supplementary Figure S3, and numerical Tables S4–S5. It uses explicit input directories and checks the 22-sample viral table.
+- `analysis/build_three_figure_pack.py` and `analysis/build_final_figure_pack.py`: preserve earlier layouts for audit; they do not represent the final brief communication.
 
 ## Rerun the numerical analysis
 
@@ -59,28 +59,32 @@ python analysis/make_final_human_figure.py \
   --out human_figure_original_style
 ```
 
-After `run_revision.py` has generated host-only normalization factors, run the joint models and current Figure 1 from the package directory:
+After `run_revision.py` has generated host-only normalization factors, keep the private recount input in the ignored rerun directory and run the joint models and main figures there:
 
 ```bash
-Rscript analysis/run_joint_mirna_models.R . joint_mirna_models Rlib
+mkdir -p rerun_output/inputs
+cp -R inputs/recount rerun_output/inputs/recount
+Rscript analysis/run_joint_mirna_models.R rerun_output rerun_output/joint_mirna_models Rlib
 python analysis/make_joint_mirna_figure.py \
-  --models joint_mirna_models \
-  --out joint_figure_1
+  --models rerun_output/joint_mirna_models \
+  --out rerun_output/joint_figure_1
+python analysis/make_mirna_genus_heatmap.py \
+  --root rerun_output --models rerun_output/joint_mirna_models \
+  --out rerun_output/mirna_genus_heatmap
 ```
 
-The output directories must not already exist. The joint model reads the local `inputs/recount` count matrices and the host-only normalization outputs from `results/count_models`. If the earlier run was written to `rerun_output/results/count_models`, copy those model outputs into the expected local location or run from a matching package tree. Generate the current Figure 2 and three-figure pack from the package directory with fresh output directories:
+The output directories must not already exist. The joint model reads the local recount matrices and the host-only factors saved by the preceding run. To assemble the publication-facing two-main-figure layout, supply the independently verified DNA-integration output:
 
 ```bash
-python analysis/make_mirna_genus_heatmap.py \
-  --root . --models joint_mirna_models --out mirna_genus_heatmap
-python analysis/build_three_figure_pack.py \
-  --root . --joint-figure joint_figure_1 \
-  --heatmap mirna_genus_heatmap \
-  --previous-figures previous_final_figures \
-  --out current_final_figures
+python analysis/build_tid_brief_figures.py \
+  --root rerun_output \
+  --joint-figure rerun_output/joint_figure_1 \
+  --heatmap rerun_output/mirna_genus_heatmap \
+  --integration /path/to/validated_dna_integration \
+  --out rerun_output/tid_figures
 ```
 
-`previous_final_figures` must contain the saved polyomavirus, bacterial-individual and historical-human plots named in the assembler. Those assets are not in this code-only repository. To check the pre-existing numerical run:
+The DNA-integration input is generated by `analysis/final_dna_integration.py` from the verified Kraken2 and competitive BKPyV/JCPyV alignment summaries; those large upstream reads are not in this repository. The builder was checked against the manuscript package: both main PNGs, numerical Tables S4–S5, and the Sankey links matched byte for byte. To check a numerical run:
 
 ```bash
 python analysis/validate_results.py --root . --recount inputs/recount
@@ -91,6 +95,6 @@ python -m unittest discover -s tests -v
 
 1. Verify original tool/reference releases, DNA trimming history, library metrics and batches where source records exist. Current container versions alone will not establish historical versions.
 2. Resolve urine fraction, input volume, the E. coli UTI control's identity, individual viral PCR/pathology data, collection timing and the original six miRNA exclusions with the source investigators. If unavailable, retain explicit limitations. No absolute abundance per mL can be recovered from the current relative tables alone.
-3. Author review of conclusions, figure choices, article-length limits, citations and all response statuses; then an approved public code/archive release and data-access statement. The repository remains private.
+3. Author review of conclusions, article-length limits, citations and the response letter. Update the manuscript's code-availability statement with the public commit or release URL. A reuse license and archival DOI are separate decisions; neither is assigned here.
 
 Full source input and output hashes are recorded in `package_checksums.json`. Clinical sequence inputs and manuscript drafts must not be committed to GitHub. A private local archive containing the small input tables is for authorized collaborators only.

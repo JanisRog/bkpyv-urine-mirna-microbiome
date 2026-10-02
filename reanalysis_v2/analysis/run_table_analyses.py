@@ -71,7 +71,8 @@ for name,ss in sets.items():
  mask=meta.loc[ss,'group'].eq('treatment').to_numpy()
  for g in [mask,~mask]:xr[g]-=xr[g].mean(0);yr[g]-=yr[g].mean(0)
  xd=np.sqrt((xr*xr).sum(0));yd=np.sqrt((yr*yr).sum(0));den=xd[:,None]*yd[None,:]
- observed=np.divide(xr.T@yr,den,out=np.full(den.shape,np.nan),where=den>0)
+ numer=np.einsum('ni,nj->ij',xr,yr)
+ observed=np.divide(numer,den,out=np.full(den.shape,np.nan),where=den>0)
  hits=np.zeros(observed.shape,int);rng=np.random.default_rng(seed)
  for start in range(0,N,500):
   b=min(500,N-start);idx=np.tile(np.arange(len(ss)),(b,1))
