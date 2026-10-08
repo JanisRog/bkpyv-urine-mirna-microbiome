@@ -11,7 +11,8 @@ from matplotlib.path import Path
 from matplotlib.patches import PathPatch, Rectangle
 
 
-def draw_sankey(cls, raw, controls, cases, figdir, out, figure_number=3):
+def draw_sankey(cls, raw, controls, cases, figdir, out, figure_number=3,
+                right_label='Historical miRNA candidates'):
     order = sorted(controls, key=lambda s: int(s[1:])) + sorted(cases, key=lambda s: int(s[1:]))
     # Display-only grouping: preserve every sample's total and full analysis tables.
     original_cls = cls[order].copy()
@@ -111,7 +112,7 @@ def draw_sankey(cls, raw, controls, cases, figdir, out, figure_number=3):
         ax.text(.814,mir_y[m],m+('*' if m=='bkv-miR-B1-3p' else ''),va='center',fontsize=10)
     ax.text(.202,1.015,'Bacterial classes',ha='center',fontweight='bold',fontsize=12)
     ax.text(.5,1.015,'Same samples',ha='center',fontweight='bold',fontsize=12)
-    ax.text(.806,1.015,'Historical miRNA candidates',ha='center',fontweight='bold',fontsize=12)
+    ax.text(.806,1.015,right_label,ha='center',fontweight='bold',fontsize=12)
     fig.suptitle(f'Figure {figure_number}   Descriptive Sankey of urinary profiles',x=.5,y=.98,fontsize=17,fontweight='bold')
     fig.text(.5,.945,'Two independently scaled link sets joined by sample identity',ha='center',fontsize=12)
     fig.text(.5,.918,'Other: each class stays below 1% in every sample; dashed guide shows connection only, not abundance',ha='center',fontsize=10)
